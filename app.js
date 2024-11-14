@@ -1,57 +1,33 @@
-// src/App.js
-import React, { useState } from 'react';
-import { Box } from '@mui/material';
-import Sidebar from './components/Sidebar';
-import EnvironmentCard from './components/EnvironmentCard';
+// src/components/Sidebar.js
+import React from 'react';
+import { Box, Drawer, Typography, TextField, List, ListItem, ListItemText } from '@mui/material';
 
-const data = [
-  {
-    appName: 'Application 1',
-    environments: [
-      {
-        name: 'Development',
-        servers: [
-          { type: 'Database Server', count: 3, image: '/db_image_url' },
-          { type: 'Web Server', count: 4, image: '/web_image_url' },
-        ]
-      },
-      {
-        name: 'Production',
-        servers: [
-          { type: 'Database Server', count: 5, image: '/db_image_url' },
-          { type: 'Web Server', count: 7, image: '/web_image_url' },
-        ]
-      },
-    ]
-  },
-  // Additional application data...
-];
-
-const App = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedApp, setSelectedApp] = useState(null);
-
-  const filteredApps = data.filter(app =>
-    app.appName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+const Sidebar = ({ searchTerm, setSearchTerm, filteredApps, onSelectApp }) => {
   return (
-    <Box sx={{ display: 'flex' }}>
-      <Sidebar
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        filteredApps={filteredApps}
-        onSelectApp={setSelectedApp}
-      />
-
-      {/* Main Content */}
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        {selectedApp && selectedApp.environments.map((env, index) => (
-          <EnvironmentCard key={index} env={env} />
-        ))}
+    <Drawer
+      variant="permanent"
+      sx={{ width: 240, flexShrink: 0, [`& .MuiDrawer-paper`]: { width: 240, boxSizing: 'border-box' } }}
+    >
+      <Box sx={{ p: 2 }}>
+        <Typography variant="h6">Infra App</Typography>
+        <TextField
+          label="Search Applications"
+          variant="outlined"
+          fullWidth
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ mt: 2, mb: 2 }}
+        />
+        <List>
+          {filteredApps.map((app, index) => (
+            <ListItem button key={index} onClick={() => onSelectApp(app)}>
+              <ListItemText primary={app.appName} />
+            </ListItem>
+          ))}
+        </List>
       </Box>
-    </Box>
+    </Drawer>
   );
 };
 
-export default App;
+export default Sidebar;
