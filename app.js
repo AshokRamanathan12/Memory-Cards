@@ -1,41 +1,57 @@
-// src/components/EnvironmentCard.js
+// src/App.js
 import React, { useState } from 'react';
-import { Box, ListItem, ListItemText, Collapse, Grid, Card, CardContent, Typography } from '@mui/material';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
+import { Box } from '@mui/material';
+import Sidebar from './components/Sidebar';
+import EnvironmentCard from './components/EnvironmentCard';
 
-const EnvironmentCard = ({ env }) => {
-  const [open, setOpen] = useState(true);
+const data = [
+  {
+    appName: 'Application 1',
+    environments: [
+      {
+        name: 'Development',
+        servers: [
+          { type: 'Database Server', count: 3, image: '/db_image_url' },
+          { type: 'Web Server', count: 4, image: '/web_image_url' },
+        ]
+      },
+      {
+        name: 'Production',
+        servers: [
+          { type: 'Database Server', count: 5, image: '/db_image_url' },
+          { type: 'Web Server', count: 7, image: '/web_image_url' },
+        ]
+      },
+    ]
+  },
+  // Additional application data...
+];
 
-  const handleToggle = () => {
-    setOpen(!open);
-  };
+const App = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedApp, setSelectedApp] = useState(null);
+
+  const filteredApps = data.filter(app =>
+    app.appName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <Box>
-      <ListItem button onClick={handleToggle}>
-        <ListItemText primary={env.name} />
-        {open ? <ExpandLess /> : <ExpandMore />}
-      </ListItem>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <Grid container spacing={2} sx={{ p: 2 }}>
-          {env.servers.map((server, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-              <Card sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
-                <img src={server.image} alt={server.type} style={{ width: '60px', height: '60px' }} />
-                <CardContent>
-                  <Typography variant="h6">{server.type}</Typography>
-                  <Typography variant="h4" color="primary" sx={{ fontWeight: 'bold' }}>
-                    {server.count}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Collapse>
+    <Box sx={{ display: 'flex' }}>
+      <Sidebar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        filteredApps={filteredApps}
+        onSelectApp={setSelectedApp}
+      />
+
+      {/* Main Content */}
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        {selectedApp && selectedApp.environments.map((env, index) => (
+          <EnvironmentCard key={index} env={env} />
+        ))}
+      </Box>
     </Box>
   );
 };
 
-export default EnvironmentCard;
+export default App;
